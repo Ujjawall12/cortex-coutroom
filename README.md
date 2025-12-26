@@ -233,8 +233,21 @@ The frontend will be available at `http://localhost:8080`
    - **Chain ID**: `31337`
    - **Currency Symbol**: ETH
 3. Import a test account (optional):
-   - Private Key: `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`
-   - This account has 10,000 ETH for testing
+   
+   > ⚠️ **SECURITY WARNING**: The private key below is a **Hardhat default test account** that is:
+   > - **ONLY safe for local development** on Hardhat networks
+   > - **NEVER use on mainnet or any public network**
+   > - **Publicly known** and documented in Hardhat docs
+   > - **Has no real value** - only works on local test networks
+   > 
+   > For production, always generate your own private keys and keep them secure!
+   
+   - **Test Account Private Key** (Hardhat default, local dev only):
+     ```
+     0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+     ```
+   - This account has 10,000 ETH on the local Hardhat network for testing
+   - **Alternative**: Generate your own test account using MetaMask or `npx hardhat accounts`
 
 ### 5. Access the Application
 

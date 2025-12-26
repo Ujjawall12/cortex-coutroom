@@ -198,6 +198,12 @@ CORS_ORIGIN=http://localhost:8080
 # Blockchain Configuration
 RPC_URL=http://127.0.0.1:8545
 CHAIN_ID=31337
+
+# ⚠️ SECURITY WARNING: Never use real private keys in production!
+# For local development, you can use Hardhat's default test account:
+# PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+# This is a well-known test account that ONLY works on local Hardhat networks.
+# For production, use environment variables or secure key management.
 PRIVATE_KEY=your_private_key_here
 
 # Contract Addresses
