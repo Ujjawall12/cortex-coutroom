@@ -104,13 +104,9 @@ const Courtroom = () => {
                 Initiate Challenge
               </Button>
             ) : (
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => (
-                  <Button onClick={openConnectModal} className="gap-2">
-                    Connect to Challenge
-                  </Button>
-                )}
-              </ConnectButton.Custom>
+              <Button onClick={openConnectModal} className="gap-2">
+                Connect to Challenge
+              </Button>
             )}
           </div>
         </motion.div>

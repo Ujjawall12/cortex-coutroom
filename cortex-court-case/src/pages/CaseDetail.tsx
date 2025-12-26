@@ -73,7 +73,7 @@ const StepIcon = ({ type }: { type: LogicStep["type"] }) => {
 const CaseDetail = () => {
   const { id } = useParams();
   const [copied, setCopied] = useState(false);
-  const { isConnected } = useWallet();
+  const { isConnected, openConnectModal } = useWallet();
   
   const dispute = mockDisputes.find(d => d.id === id);
 
@@ -342,13 +342,9 @@ const CaseDetail = () => {
                       </Button>
                     </div>
                   ) : (
-                    <ConnectButton.Custom>
-                      {({ openConnectModal }) => (
-                        <Button onClick={openConnectModal} className="w-full">
-                          Connect to Vote
-                        </Button>
-                      )}
-                    </ConnectButton.Custom>
+                    <Button onClick={openConnectModal} className="w-full">
+                      Connect to Vote
+                    </Button>
                   )}
                 </CardContent>
               </Card>

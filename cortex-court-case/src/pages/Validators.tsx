@@ -25,7 +25,7 @@ import { toast } from "sonner";
 const Validators = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const { isConnected } = useWallet();
+  const { isConnected, openConnectModal } = useWallet();
 
   const filteredValidators = mockValidators.filter(v => {
     const matchesSearch = searchQuery === "" || 
@@ -75,13 +75,9 @@ const Validators = () => {
                 Become a Validator
               </Button>
             ) : (
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => (
-                  <Button onClick={openConnectModal} className="gap-2">
-                    Connect to Apply
-                  </Button>
-                )}
-              </ConnectButton.Custom>
+              <Button onClick={openConnectModal} className="gap-2">
+                Connect to Apply
+              </Button>
             )}
           </div>
         </motion.div>

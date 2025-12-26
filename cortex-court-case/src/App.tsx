@@ -7,6 +7,8 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { config } from "./config/wagmi";
+import { NetworkSwitcher } from "./components/NetworkSwitcher";
+import { ConnectionMonitor } from "./components/ConnectionMonitor";
 import Index from "./pages/Index";
 import Courtroom from "./pages/Courtroom";
 import Cases from "./pages/Cases";
@@ -30,6 +32,8 @@ const App = () => (
         })}
       >
         <TooltipProvider>
+          <ConnectionMonitor />
+          <NetworkSwitcher />
           <Toaster />
           <Sonner />
           <BrowserRouter>

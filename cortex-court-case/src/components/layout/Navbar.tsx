@@ -29,7 +29,7 @@ export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const location = useLocation();
-  const { address, isConnected, formatAddress, copyAddress, disconnect, chain } = useWallet();
+  const { address, isConnected, formatAddress, copyAddress, disconnect, chain, openConnectModal } = useWallet();
 
   const handleCopy = async () => {
     const success = await copyAddress();
@@ -82,10 +82,12 @@ export const Navbar = () => {
           {/* Right Section */}
           <div className="flex items-center gap-3">
             {/* Network Status */}
-            <Badge variant="outline" className="hidden sm:flex gap-1.5 bg-success/10 text-success border-success/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              {chain?.name || "Mainnet"}
-            </Badge>
+            {isConnected && (
+              <Badge variant="outline" className="hidden sm:flex gap-1.5 bg-success/10 text-success border-success/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                {chain?.name || "Localhost 8545"}
+              </Badge>
+            )}
 
             {/* Wallet Connection */}
             {isConnected && address ? (
@@ -126,14 +128,10 @@ export const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => (
-                  <Button onClick={openConnectModal} size="sm" className="gap-2">
-                    <Wallet className="w-4 h-4" />
-                    Connect Wallet
-                  </Button>
-                )}
-              </ConnectButton.Custom>
+              <Button onClick={openConnectModal} size="sm" className="gap-2">
+                <Wallet className="w-4 h-4" />
+                Connect Wallet
+              </Button>
             )}
 
             {/* Mobile Menu Button */}
