@@ -1,481 +1,541 @@
-# The Cortensor Judge - Backend
+# ⚙️ Cortensor Judge - Backend
 
-A production-ready decentralized dispute resolution and safety layer for AI agents on the Cortensor Network.
+<div align="center">
 
-## Overview
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
+![Ethereum](https://img.shields.io/badge/Ethereum-627EEA?style=for-the-badge&logo=ethereum&logoColor=white)
 
-The Cortensor Judge transforms Cortensor from a simple "Inference Engine" into a **Verifiable Justice System** where every AI output can be challenged, tried, and settled on the blockchain.
+**Backend Services for Decentralized AI Dispute Resolution**
 
-### Key Features
+[Features](#-features) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [API Documentation](#-api-documentation)
 
-- **Evidence Bundle Generation**: Creates immutable records of AI inference with logic traces
-- **Adversarial Detection**: Uses cosine similarity to detect deviating miner outputs
-- **PoUW Validation**: Implements Proof of Useful Work with deterministic policy testing
-- **Smart Contract Integration**: Manages bonds, slashing, and reward distribution
-- **ERC-8004 Agent Identity**: On-chain reputation tracking for miners and judges
-- **IPFS Storage**: Permanent, immutable legal records via Pinata
-- **Real-time Queue Management**: BullMQ for handling challenge windows and verdicts
+</div>
 
-## Project Structure
+---
+
+## 📋 Table of Contents
+
+- [Overview](#-overview)
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Services](#-services)
+- [Smart Contracts](#-smart-contracts)
+- [API Documentation](#-api-documentation)
+- [Configuration](#-configuration)
+- [Development](#-development)
+- [Deployment](#-deployment)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+## 🎯 Overview
+
+The Cortensor Judge backend is a comprehensive system that handles dispute resolution logic, blockchain interactions, and evidence management. It consists of three main components:
+
+1. **Sentinel Service** - Main API server and dispute processing
+2. **Judge SDK** - Client library for interacting with the system
+3. **Smart Contracts** - On-chain dispute resolution logic
+
+---
+
+## ✨ Features
+
+### 🔐 **Secure & Reliable**
+- Type-safe TypeScript implementation
+- Comprehensive error handling
+- Input validation and sanitization
+- Secure evidence storage
+
+### ⚡ **High Performance**
+- Asynchronous processing with BullMQ
+- Redis-based job queues
+- Efficient blockchain interactions
+- Optimized database queries
+
+### 🔗 **Blockchain Integration**
+- Ethereum smart contract interactions
+- Real-time event monitoring
+- Transaction management
+- Gas optimization
+
+### 📊 **Monitoring & Metrics**
+- Health check endpoints
+- Performance metrics
+- Error tracking
+- Request logging
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              Sentinel Service (Express API)             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │   Challenge  │  │   Verdict   │  │   Evidence   │ │
+│  │   Service    │  │   Service   │  │   Service    │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
+└─────────────────────────────────────────────────────────┘
+                    ↕                    ↕
+        ┌──────────────────┐  ┌──────────────────┐
+        │   Dispute Queue  │  │  Justice Client  │
+        │     (BullMQ)     │  │   (Ethers.js)    │
+        └──────────────────┘  └──────────────────┘
+                    ↕                    ↕
+        ┌──────────────────┐  ┌──────────────────┐
+        │      Redis       │  │  Smart Contracts │
+        │   (Job Queue)    │  │   (Hardhat)      │
+        └──────────────────┘  └──────────────────┘
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 cortensor-judge-backend/
-├── contracts/                    # Solidity smart contracts
-│   ├── Justice.sol              # Core dispute resolution contract
-│   ├── ReputationRegistry.sol    # ERC-8004 agent identity & reputation
-│   ├── interfaces/
-│   │   └── ICOR.sol            # COR token interface
-│   ├── script/
-│   │   └── Deploy.s.sol        # Foundry deployment script
-│   └── foundry.toml            # Foundry configuration
-│
-├── sentinel/                     # NodeJS backend service
+├── sentinel/                    # Main API service
 │   ├── src/
-│   │   ├── index.ts            # Main entry point
-│   │   ├── server.ts           # Express REST API
-│   │   ├── config/
-│   │   │   └── env.ts          # Environment configuration
-│   │   ├── cortensor/
-│   │   │   ├── router.ts       # Cortensor API client
-│   │   │   └── validate.ts     # PoUW validator
-│   │   ├── evidence/
-│   │   │   ├── bundle.ts       # Evidence bundle management
-│   │   │   └── ipfs.ts         # IPFS/Pinata integration
-│   │   ├── similarity/
-│   │   │   └── cosine.ts       # Cosine similarity analysis
-│   │   ├── queue/
-│   │   │   └── dispute.queue.ts # BullMQ queue management
-│   │   ├── services/
-│   │   │   ├── challenge.service.ts  # Challenge initiation
-│   │   │   └── verdict.service.ts    # Verdict generation & submission
-│   │   ├── web3/
-│   │   │   └── justice.client.ts     # Blockchain interaction
+│   │   ├── server.ts           # Express server setup
+│   │   ├── config/             # Configuration
+│   │   │   ├── env.ts          # Environment variables
+│   │   │   └── system.ts       # System configuration
+│   │   ├── services/           # Business logic
+│   │   │   ├── challenge.service.ts
+│   │   │   └── verdict.service.ts
+│   │   ├── web3/               # Blockchain integration
+│   │   │   └── justice.client.ts
+│   │   ├── evidence/          # Evidence handling
+│   │   │   ├── bundle.ts      # Evidence bundling
+│   │   │   └── ipfs.ts        # IPFS integration
+│   │   ├── queue/             # Job queues
+│   │   │   └── dispute.queue.ts
+│   │   ├── similarity/         # Similarity algorithms
+│   │   │   └── cosine.ts
+│   │   ├── cortensor/         # Cortensor integration
+│   │   │   ├── router.ts
+│   │   │   └── validate.ts
+│   │   ├── monitoring/        # Metrics and monitoring
+│   │   │   └── metrics.ts
+│   │   └── types/             # TypeScript types
+│   │       └── evidence.ts
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── judge-sdk/                   # Client SDK
+│   ├── src/
+│   │   ├── client.ts           # Main SDK client
+│   │   ├── challenge.ts        # Challenge operations
+│   │   ├── submitEvidence.ts   # Evidence submission
 │   │   └── types/
-│   │       └── evidence.ts     # TypeScript type definitions
-│   ├── package.json
-│   └── tsconfig.json
+│   │       └── evidence.ts
+│   └── package.json
 │
-├── judge-sdk/                    # SDK for external developers
-│   ├── src/
-│   │   ├── index.ts            # SDK exports
-│   │   ├── client.ts           # JudgeClient class
-│   │   ├── submitEvidence.ts   # Evidence submission helper
-│   │   └── challenge.ts        # Challenge creation helper
-│   ├── package.json
-│   └── tsconfig.json
+├── contracts/                   # Smart contracts
+│   ├── contracts/
+│   │   ├── Justice.sol         # Main dispute contract
+│   │   ├── ReputationRegistry.sol
+│   │   ├── MockCORToken.sol
+│   │   └── interfaces/
+│   │       └── ICOR.sol
+│   ├── hardhat-scripts/
+│   │   └── deploy.ts           # Deployment script
+│   ├── script/
+│   │   └── Deploy.s.sol       # Foundry deployment
+│   ├── hardhat.config.ts
+│   └── package.json
 │
-├── docker/
-│   ├── Dockerfile              # Container image definition
-│   └── docker-compose.yml      # Multi-container orchestration
+├── docker/                      # Docker configuration
+│   ├── Dockerfile
+│   └── docker-compose.yml
 │
-├── .env.example                 # Environment variable template
+├── package.json                 # Root package.json
 └── README.md                    # This file
 ```
 
-## Quick Start
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- **Node.js** 18+ and npm
-- **Docker** and Docker Compose (optional, for containerized deployment)
-- **Redis** (included in docker-compose)
-- **Foundry** (for smart contract deployment)
+- **Node.js** 18.0.0 or higher
+- **npm** or **yarn**
+- **Redis** (for job queues)
+- **Hardhat** (for local blockchain)
 
 ### Installation
 
-1. **Clone and setup**:
-```bash
-cd cortensor-judge-backend
-cp .env.example .env
-# Edit .env with your configuration
-npm install --workspaces
+1. **Navigate to backend directory**
+   ```bash
+   cd cortensor-judge-backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install workspace dependencies**
+   ```bash
+   npm install --workspaces
+   ```
+
+### Environment Setup
+
+Create a `.env` file in the `sentinel/` directory:
+
+```env
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:8080
+
+# Blockchain Configuration
+RPC_URL=http://127.0.0.1:8545
+CHAIN_ID=31337
+PRIVATE_KEY=your_private_key_here
+
+# Contract Addresses
+JUSTICE_CONTRACT_ADDRESS=0x...
+REPUTATION_CONTRACT_ADDRESS=0x...
+COR_TOKEN_ADDRESS=0x...
+
+# Redis Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# IPFS Configuration (optional)
+IPFS_API_URL=http://localhost:5001
 ```
 
-2. **Build smart contracts**:
+### Running the Services
+
+#### 1. Start Local Blockchain
+
 ```bash
 cd contracts
-forge build
+npx hardhat node
 ```
 
-3. **Deploy contracts**:
+This starts a local Hardhat node on `http://127.0.0.1:8545`
+
+#### 2. Deploy Smart Contracts
+
 ```bash
-cd contracts
-forge script script/Deploy.s.sol:DeployJudge --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
-# Update .env with deployed contract addresses
+# Using Hardhat
+npx hardhat run hardhat-scripts/deploy.ts --network localhost
+
+# Or using Foundry
+forge script script/Deploy.s.sol:DeployJudge --broadcast --rpc-url http://localhost:8545
 ```
 
-4. **Build and run sentinel**:
+#### 3. Start Redis
+
+```bash
+# Using Docker
+docker run -d -p 6379:6379 redis:latest
+
+# Or using local Redis
+redis-server
+```
+
+#### 4. Start Sentinel Service
+
 ```bash
 cd sentinel
-npm run build
-npm run dev  # Development with hot reload
-# or
-npm start    # Production mode
+npm run dev
 ```
+
+The API will be available at `http://localhost:3001`
+
+---
+
+## 🔧 Services
+
+### Sentinel Service
+
+The main API service that handles:
+- Challenge creation and management
+- Verdict processing
+- Evidence handling
+- Blockchain interactions
+
+**Key Features**:
+- RESTful API endpoints
+- Real-time dispute processing
+- Queue-based job processing
+- Blockchain event monitoring
+
+### Judge SDK
+
+Client library for interacting with the system:
+
+```typescript
+import { JudgeClient } from '@cortensor/judge-sdk';
+
+const client = new JudgeClient({
+  apiUrl: 'http://localhost:3001',
+  rpcUrl: 'http://127.0.0.1:8545'
+});
+
+// Create a challenge
+const challenge = await client.createChallenge({
+  taskId: 'task-123',
+  evidence: {...}
+});
+```
+
+### Smart Contracts
+
+#### Justice Contract
+Main dispute resolution contract handling:
+- Challenge creation
+- Validator voting
+- Verdict execution
+- Reward distribution
+
+#### Reputation Registry
+Tracks validator reputation scores.
+
+#### Mock COR Token
+ERC-20 token for testing rewards and slashing.
+
+---
+
+## 📡 API Documentation
+
+### Health Check
+
+```http
+GET /health
+```
+
+**Response**:
+```json
+{
+  "status": "healthy",
+  "timestamp": "2024-01-01T00:00:00Z",
+  "services": {
+    "blockchain": "connected",
+    "redis": "connected"
+  }
+}
+```
+
+### Create Challenge
+
+```http
+POST /api/challenges
+Content-Type: application/json
+
+{
+  "taskId": "task-123",
+  "challenger": "0x...",
+  "evidence": {
+    "originalOutput": "...",
+    "challengedOutput": "...",
+    "similarity": 0.85
+  }
+}
+```
+
+### Get Challenge
+
+```http
+GET /api/challenges/:id
+```
+
+### Submit Verdict
+
+```http
+POST /api/verdicts
+Content-Type: application/json
+
+{
+  "challengeId": "challenge-123",
+  "validator": "0x...",
+  "verdict": "uphold",
+  "reason": "..."
+}
+```
+
+### Get Verdict
+
+```http
+GET /api/verdicts/:id
+```
+
+---
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Server port | `3001` |
+| `NODE_ENV` | Environment | `development` |
+| `RPC_URL` | Blockchain RPC URL | `http://127.0.0.1:8545` |
+| `CHAIN_ID` | Blockchain chain ID | `31337` |
+| `REDIS_HOST` | Redis host | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+
+### Smart Contract Configuration
+
+Edit `contracts/hardhat.config.ts` to configure:
+- Network settings
+- Compiler version
+- Gas settings
+
+---
+
+## 💻 Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev              # Start sentinel in dev mode
+npm run build            # Build all workspaces
+npm run start            # Start sentinel in production mode
+
+# Testing
+npm test                 # Run all tests
+npm run test:coverage    # Run tests with coverage
+
+# Code Quality
+npm run lint             # Lint all workspaces
+npm run lint:fix         # Fix linting issues
+npm run typecheck        # Type check all workspaces
+npm run format           # Format code
+
+# Contracts
+npm run contracts:build  # Build contracts
+npm run contracts:deploy # Deploy contracts
+```
+
+### Development Workflow
+
+1. Start local blockchain
+2. Deploy contracts
+3. Start Redis
+4. Start sentinel service
+5. Make changes and test
+
+### Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test
+npm test -- sentinel/src/tests/integration.test.ts
+
+# Watch mode
+npm test -- --watch
+```
+
+---
+
+## 🐳 Deployment
 
 ### Docker Deployment
 
 ```bash
-# Build and run with Docker Compose
+# Build image
+docker build -f docker/Dockerfile -t cortensor-judge:latest .
+
+# Run with docker-compose
 docker-compose -f docker/docker-compose.yml up -d
-
-# Check logs
-docker-compose -f docker/docker-compose.yml logs -f sentinel
-
-# Stop services
-docker-compose -f docker/docker-compose.yml down
 ```
 
-## Configuration
-
-### Environment Variables
-
-See `.env.example` for all available configuration options. Key variables:
-
-```bash
-# Blockchain
-BLOCKCHAIN_RPC_URL=https://mainnet.base.org
-JUSTICE_CONTRACT_ADDRESS=0x...
-VALIDATOR_PRIVATE_KEY=0x...
-VALIDATOR_ADDRESS=0x...
-
-# External Services
-CORTENSOR_API_URL=https://api.cortensor.network
-PINATA_API_KEY=...
-PINECONE_API_KEY=...
-
-# Judge Parameters
-CHALLENGE_WINDOW_DURATION=300  # seconds
-MIN_SIMILARITY_THRESHOLD=95    # 0-100
-MIN_BOND_AMOUNT=100000000000000000  # wei
-```
-
-## API Documentation
-
-### REST Endpoints
-
-#### Challenge Management
-
-**POST /challenge**
-Initiate a challenge against suspicious output
-```json
-{
-  "evidence": { /* EvidenceBundle */ },
-  "bondAmount": "100000000000000000"
-}
-```
-
-**POST /monitor**
-Monitor for suspicious outputs
-```json
-{
-  "prompt": "What is 2+2?",
-  "threshold": 95
-}
-```
-
-**POST /auto-challenge**
-Automatically challenge if suspicious
-```json
-{
-  "evidence": { /* EvidenceBundle */ },
-  "minBond": "100000000000000000",
-  "maxBond": "10000000000000000000"
-}
-```
-
-#### Verdict Management
-
-**POST /verdict/generate**
-Generate verdict using PoUW validation
-```json
-{
-  "disputeId": "1",
-  "evidence": { /* EvidenceBundle */ },
-  "minerOutput": "The answer is..."
-}
-```
-
-**POST /verdict/submit**
-Submit verdict to Justice contract
-```json
-{
-  "disputeId": "1",
-  "evidence": { /* EvidenceBundle */ },
-  "verdict": "MINER_WRONG",
-  "reasoning": "Qm..."
-}
-```
-
-**POST /verdict/execute**
-Execute full verdict workflow
-```json
-{
-  "disputeId": "1",
-  "evidence": { /* EvidenceBundle */ }
-}
-```
-
-**POST /dispute/settle**
-Settle dispute and execute rewards/slashes
-```json
-{
-  "disputeId": "1"
-}
-```
-
-#### Queries
-
-**GET /dispute/:disputeId**
-Get dispute details
+### Production Deployment
 
-**GET /miner/:minerAddress/trust-score**
-Get miner trust score
-
-**GET /queue/stats**
-Get queue statistics
+1. Set `NODE_ENV=production`
+2. Configure production RPC URL
+3. Set up Redis cluster
+4. Deploy smart contracts to mainnet
+5. Update contract addresses in `.env`
+6. Start services with PM2 or similar
 
-**GET /health**
-Health check
+---
 
-### SDK Usage
+## 🔍 Troubleshooting
 
-```typescript
-import { JudgeClient, EvidenceBundle } from 'cortensor-judge-sdk';
+### Connection Issues
 
-const client = new JudgeClient('http://localhost:3001');
+**Problem**: Cannot connect to blockchain
 
-// Submit evidence
-const result = await client.submitEvidence(evidence, bondAmount);
-console.log('Dispute ID:', result.disputeId);
+**Solutions**:
+1. Verify Hardhat node is running
+2. Check RPC URL in `.env`
+3. Verify chain ID matches
 
-// Monitor output
-const monitoring = await client.monitorOutput(prompt, 0.95);
-if (monitoring.isSuspicious) {
-  // Auto-challenge
-  const challenge = await client.autoChallenge(evidence, minBond, maxBond);
-}
+**Problem**: Redis connection failed
 
-// Generate and submit verdict
-const verdict = await client.generateVerdict(disputeId, evidence, output);
-const submission = await client.submitVerdict(
-  disputeId,
-  evidence,
-  verdict.verdict,
-  verdict.reasoning
-);
+**Solutions**:
+1. Ensure Redis is running
+2. Check Redis host and port
+3. Verify network connectivity
 
-// Settle dispute
-await client.settleDispute(disputeId);
-```
+### Contract Issues
 
-## Smart Contracts
+**Problem**: Contract deployment fails
 
-### Justice.sol
+**Solutions**:
+1. Check Hardhat node is running
+2. Verify account has sufficient balance
+3. Check contract compilation
 
-The core smart contract managing disputes, verdicts, and settlements.
+### API Issues
 
-**Key Functions**:
-- `initiateChallenge(EvidenceBundle, uint256)` - Start a dispute
-- `submitVerdict(uint256, VerdictType, string)` - Submit verdict as validator
-- `settleDispute(uint256)` - Execute rewards/slashes
-- `registerValidator(address, uint256)` - Register a validator node
-- `registerAgentIdentity(string)` - Register ERC-8004 agent identity
+**Problem**: API endpoints not responding
 
-**Events**:
-- `DisputeInitiated` - New dispute created
-- `VerdictSubmitted` - Verdict issued
-- `DisputeSettled` - Dispute finalized with rewards/slashes
-- `MinerSlashed` - Miner penalized
-- `AgentIdentityRegistered` - Agent identity created
+**Solutions**:
+1. Check server logs
+2. Verify port is not in use
+3. Check CORS configuration
 
-### ReputationRegistry.sol
+---
 
-Manages agent reputation and ERC-8004 agent identities.
+## 📚 Additional Resources
 
-**Features**:
-- Track verdict history for miners and judges
-- Calculate reputation scores (0-10000)
-- Award badges (Trusted Miner, Elite Judge, Bounty Hunter, etc.)
-- Update trust scores based on outcomes
+- [Express Documentation](https://expressjs.com)
+- [Ethers.js Documentation](https://docs.ethers.io)
+- [Hardhat Documentation](https://hardhat.org)
+- [BullMQ Documentation](https://docs.bullmq.io)
+- [Redis Documentation](https://redis.io/docs)
 
-## Architecture
+---
 
-### System Flow
+## 🤝 Contributing
 
-1. **Evidence Bundle Generation**
-   - Miner provides inference result + logic trace
-   - PoI (Proof of Inference) signature included
-   - Bundle pinned to IPFS via Pinata
+When contributing to the backend:
 
-2. **Challenge Initiation**
-   - Sentinel monitors for deviations using cosine similarity
-   - Challenger locks $COR bond in Justice contract
-   - Dispute enters "Challenge Window" phase
+1. Follow TypeScript best practices
+2. Write comprehensive tests
+3. Document your code
+4. Follow the existing code style
+5. Update API documentation
 
-3. **Validation (PoUW)**
-   - High-reputation validators run deterministic policy tests
-   - Outputs validated against safety/accuracy/consistency rules
-   - Verdict generated based on validation score
+---
 
-4. **Settlement**
-   - If miner wrong: Slashed and challenger rewarded
-   - If miner correct: Challenger loses bond
-   - Reputation scores updated
-   - Transaction recorded on-chain
-
-### Key Technologies
-
-- **Blockchain**: Solidity, Foundry, ethers.js
-- **Backend**: Node.js, Express, TypeScript
-- **Queue Management**: BullMQ, Redis
-- **Storage**: IPFS (Pinata), Vector DB (Pinecone)
-- **AI Integration**: Cortensor Router API, LangChain
-- **Containerization**: Docker, Docker Compose
-
-## Testing
-
-```bash
-# Unit tests
-npm run test
-
-# Coverage report
-npm run test:coverage
-
-# Integration tests
-npm run test:integration
+## 📝 License
 
-# Type checking
-npm run typecheck
+This project is licensed under the MIT License.
 
-# Linting
-npm run lint
-npm run lint:fix
-```
+---
 
-## Monitoring
+<div align="center">
 
-The Sentinel service includes:
+**Built with ❤️ using Node.js, TypeScript, and Ethereum**
 
-- **Queue Metrics**: View dispute/verdict queue statistics
-- **Health Checks**: Periodic health monitoring
-- **Event Logging**: Detailed logs for all operations
-- **Performance Monitoring**: Response times and throughput
+[Back to Main README](../README.md)
 
-Access metrics via:
-```bash
-GET /queue/stats
-GET /health
-```
-
-## Deployment
-
-### Production Checklist
-
-- [ ] Set all required environment variables
-- [ ] Deploy and verify smart contracts
-- [ ] Configure Cortensor API credentials
-- [ ] Set up Pinata IPFS account
-- [ ] Configure Pinecone vector database
-- [ ] Set appropriate challenge window duration (24 hours)
-- [ ] Enable metrics and monitoring
-- [ ] Set up logging aggregation
-- [ ] Configure backup/recovery procedures
-- [ ] Load test for expected throughput
-
-### Scaling Considerations
-
-- **Horizontal Scaling**: Run multiple Sentinel instances behind load balancer
-- **Queue Optimization**: Adjust BullMQ concurrency based on resource availability
-- **Caching**: Implement Redis caching for reputation queries
-- **Database**: Consider using PostgreSQL for historical data instead of logs
-
-## Security Considerations
-
-1. **Private Keys**: Never commit private keys; use environment variables
-2. **Bond Validation**: Always verify bond amounts before processing
-3. **Signature Verification**: Validate all cryptographic proofs
-4. **Rate Limiting**: Enable API rate limiting in production
-5. **CORS**: Restrict CORS origins to trusted domains
-6. **Access Control**: Implement role-based access for contract functions
-
-## Troubleshooting
-
-### Common Issues
-
-**Redis Connection Failed**
-```bash
-# Ensure Redis is running
-docker-compose -f docker/docker-compose.yml up redis
-# Or verify Redis URL in .env
-```
-
-**Cortensor API Timeout**
-```bash
-# Check API endpoint and network connectivity
-# Verify CORTENSOR_API_KEY is set
-curl https://api.cortensor.network/health
-```
-
-**Smart Contract Calls Failing**
-```bash
-# Verify contract addresses in .env
-# Check validator has sufficient $COR tokens
-# Verify RPC endpoint is accessible
-```
-
-**IPFS Pinning Failed**
-```bash
-# Verify Pinata credentials
-# Check Pinata account has available storage
-# Verify internet connectivity
-```
-
-## Contributing
-
-This is a core component of the Cortensor Judge system. For contributions:
-
-1. Follow TypeScript strict mode guidelines
-2. Add tests for new features
-3. Update documentation
-4. Submit PR with detailed description
-
-## License
-
-MIT
-
-## Support
-
-- **Documentation**: See `/docs` folder
-- **Issues**: GitHub Issues
-- **Discussions**: GitHub Discussions
-- **Discord**: Join Cortensor community Discord
-
-## Roadmap
-
-### Phase 1 (Current)
-- [x] Core Justice contract
-- [x] Evidence bundling and IPFS storage
-- [x] Cosine similarity detection
-- [x] PoUW validation
-- [x] Sentinel bot service
-
-### Phase 2
-- [ ] Advanced ML-based anomaly detection
-- [ ] Multi-chain support (Arbitrum, Polygon)
-- [ ] Governance token (DAO)
-- [ ] Appeal mechanism
-- [ ] Insurance pool for slashing
-
-### Phase 3
-- [ ] Quantum-resistant cryptography
-- [ ] Zero-knowledge proof validation
-- [ ] Cross-chain arbitration
-- [ ] Real-time monitoring dashboard
-
-## References
-
-- [ERC-8004: Agent Identity](https://eips.ethereum.org/EIPS/eip-8004)
-- [Cortensor Documentation](https://docs.cortensor.network)
-- [Foundry Book](https://book.getfoundry.sh)
-- [ethers.js Documentation](https://docs.ethers.org)
+</div>
+
