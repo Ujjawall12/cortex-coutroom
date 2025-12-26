@@ -199,11 +199,11 @@ CORS_ORIGIN=http://localhost:8080
 RPC_URL=http://127.0.0.1:8545
 CHAIN_ID=31337
 
-# ⚠️ SECURITY WARNING: Never use real private keys in production!
-# For local development, you can use Hardhat's default test account:
-# PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-# This is a well-known test account that ONLY works on local Hardhat networks.
-# For production, use environment variables or secure key management.
+# ⚠️ SECURITY WARNING: Never use real private keys in production or commit them to git!
+# For local development, generate your own test account or use Hardhat's default accounts
+# Example format (replace with your own test key):
+# PRIVATE_KEY=test123456abcd7890efghijklmnopqrstuvwxyz1234567890abcdef123456
+# For production, use environment variables or secure key management services
 PRIVATE_KEY=your_private_key_here
 
 # Contract Addresses

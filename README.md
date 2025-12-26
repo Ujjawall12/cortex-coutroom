@@ -234,20 +234,18 @@ The frontend will be available at `http://localhost:8080`
    - **Currency Symbol**: ETH
 3. Import a test account (optional):
    
-   > ⚠️ **SECURITY WARNING**: The private key below is a **Hardhat default test account** that is:
-   > - **ONLY safe for local development** on Hardhat networks
-   > - **NEVER use on mainnet or any public network**
-   > - **Publicly known** and documented in Hardhat docs
-   > - **Has no real value** - only works on local test networks
-   > 
-   > For production, always generate your own private keys and keep them secure!
+   > ⚠️ **SECURITY WARNING**: 
+   > - **NEVER use real private keys in documentation or public repositories**
+   > - For local development, use Hardhat's default test accounts (see Hardhat docs)
+   > - Generate your own test accounts using MetaMask or `npx hardhat accounts`
+   > - For production, always use secure key management and environment variables
    
-   - **Test Account Private Key** (Hardhat default, local dev only):
+   - **Test Account Private Key** (example format - replace with your own):
      ```
-     0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+     test123456abcd7890efghijklmnopqrstuvwxyz1234567890abcdef123456
      ```
-   - This account has 10,000 ETH on the local Hardhat network for testing
-   - **Alternative**: Generate your own test account using MetaMask or `npx hardhat accounts`
+   - This is just a placeholder - use your own test account private key
+   - Test accounts typically have 10,000 ETH on local Hardhat networks
 
 ### 5. Access the Application
 
